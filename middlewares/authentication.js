@@ -20,5 +20,4 @@ exports.ensureAuth = function (req, res, next) {
     } catch (ex) {
         return res.status(403).redirect('/login');
     }
-
 }
