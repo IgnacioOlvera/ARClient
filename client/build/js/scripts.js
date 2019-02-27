@@ -4,6 +4,9 @@ $('#logout').on('click', function () {
     localStorage.clear();
     window.location.replace("/login");
 });
+if (!localStorage.getItem('authorization') && window.location.origin() != '/login') {
+    window.location.replace("/login");
+}
 
 function initInicio() {
     let modal = "";

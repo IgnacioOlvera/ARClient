@@ -4,23 +4,21 @@ var secret = 'clave_secreta_curso';
 
 
 exports.ensureAuth = function (req, res, next) {
-    if (req.headers.authorization == "null") {
-        res.redirect('/login');
-        return;
+    if (!req.headers.authorization) {
+        return res.status(403).redirect('/login');;
     }
     var token = req.headers.authorization.replace(/['"]+/g, '');
     try {
         var payload = jwt.decode(token, secret);
         if (payload.exp <= moment().unix) {
-            res.redirect('/login');
-            //return res.status(401).send({ message: 'Token ha expirado' });
+            return res.status(403).redirect('/login');;
 
         } else {
             req.payload = payload;
             next();
         }
     } catch (ex) {
-        res.redirect('/login');
+        return res.status(403).redirect('/login');
     }
 
 }
