@@ -4,7 +4,7 @@ $('#logout').on('click', function () {
     localStorage.clear();
     window.location.replace("/login");
 });
-if (!localStorage.getItem('authorization') && window.location.origin() != '/login') {
+if (!localStorage.getItem('authorization') || localStorage.getItem('authorization') == null && window.location.origin() != '/login') {
     window.location.replace("/login");
 }
 
