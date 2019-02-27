@@ -14,7 +14,7 @@ var app = require('./app');
 var port = process.env.PORT || 4000;
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://heroku_5dv87bb4:heroku_5dv87bb4@ds163683.mlab.com:63683/heroku_5dv87bb4', { useNewUrlParser: true }, (err, res) => {
+mongoose.connect('mongodb://client:Mission03@ds163683.mlab.com:63683/heroku_5dv87bb4', { useNewUrlParser: true }, (err, res) => {
     if (err) {
         throw err;
     } else {
