@@ -165,7 +165,7 @@ function initInicio() {
                         }
                         for (let index = 0; index < $('.options:checked').length; index++) {
                             const option = $('.options:checked')[index];
-                            fields += `"${$(option).val()}":{ "$sum":{ "$toInt": "$values.${$(option).val()}" } },`;
+                            fields += `"${$(option).val()}":{ "$sum": "$values.${$(option).val()}"  },`;
                         }
                         $.ajax({
                             type: "PUT",

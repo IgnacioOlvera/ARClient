@@ -52,9 +52,9 @@ api.put('/graphMaker/:report', middleware.ensureAuth, function (req, res) {
         query = JSON.parse(query);
         Log.aggregate([{ $match: { report: mongoose.Types.ObjectId(req.params.report) } }, query]).exec(function (err, rows) {
             if (err)
-                res.status(500).send({ data: "Server Internal Error" })
+                throw err;
+                // res.status(500).send({ data: "Server Internal Error" })
             else {
-                console.log(rows);
                 if (rows.length > 0) {
                     res.status(200).send({ data: rows })
                 } else {
@@ -64,6 +64,7 @@ api.put('/graphMaker/:report', middleware.ensureAuth, function (req, res) {
             }
         })
     } catch (error) {
+        throw err
         res.status(500).send({ data: "Server Internal Error" })
     }
 
