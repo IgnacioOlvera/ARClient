@@ -9,23 +9,34 @@ var Log = require('../models/log');
 //get customers reports
 api.get('/types/:id?', middleware.ensureAuth, function (req, res) {
     try {
-        if (req.params.id) {
-            Type.find({ _id: req.params.id }, function (err, types) {
-                if (err)
-                    res.status(500).send({ data: "Server Internal Error" })
-                else {
-                    res.status(200).send({ data: types });
-                }
-            });
-        } else {
-            Type.find({ customer: req.payload.id }, function (err, types) {
+        if (req.payload.nombre == "Operaciones" || req.payload.nombre == "Admon") {
+            Type.find({}, function (err, types) {
                 if (err)
                     throw err
                 else {
                     res.status(200).send({ data: types });
                 }
             });
+        } else {
+            if (req.params.id) {
+                Type.find({ _id: req.params.id }, function (err, types) {
+                    if (err)
+                        res.status(500).send({ data: "Server Internal Error" })
+                    else {
+                        res.status(200).send({ data: types });
+                    }
+                });
+            } else {
+                Type.find({ customer: req.payload.id }, function (err, types) {
+                    if (err)
+                        throw err
+                    else {
+                        res.status(200).send({ data: types });
+                    }
+                });
+            }
         }
+
     } catch (error) {
         res.status(500).send({ data: "Server Internal Error" })
     }
