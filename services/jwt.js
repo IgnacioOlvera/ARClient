@@ -7,7 +7,7 @@ exports.createToken = function (user) {
         nombre: user.name,
         correo: user.rfc,
         iat: moment().unix(),
-        exp: moment().add(10.6, 'hours').unix()
+        exp: moment().add(8, 'hours').unix()
     };
     return jwt.encode(payload, secret);
 }

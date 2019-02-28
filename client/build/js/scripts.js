@@ -261,6 +261,7 @@ function initInicio() {
             $.notify("Ha ocurrido un Error");
         },
         error: function (result) {
+            window.location = '/login'
             $.notify("Ha ocurrido un Error");
         }
     });
