@@ -81,46 +81,42 @@ api.put('/graphMaker/:report', middleware.ensureAuth, function (req, res) {
 
 })
 
-api.get('/getReports', middleware.ensureAuth, function (req, res) {
-
-    try {
-        Report.aggregate([
-            {
-                $addFields: {
-                    week: {
-                        $week: {
-                            $dateFromString: {
-                                dateString: '$act_date',
-                                timezone: 'America/New_York'
+api.get('/getReports/:id?', middleware.ensureAuth, function (req, res) {
+    if (req.params.id) {
+        try {
+            Report.aggregate([
+                {
+                    $match: {
+                        "type": mongoose.Types.ObjectId(req.params.id)
+                    }
+                },
+                {
+                    $addFields: {
+                        week: {
+                            $week: {
+                                $dateFromString: {
+                                    dateString: '$act_date',
+                                    timezone: 'America/New_York'
+                                }
                             }
-                        }
 
+                        }
                     }
                 }
-            }
-        ], function (err, types) {
-            if (err)
-                throw err
-            else {
-                res.status(200).send({ data: types });
-            }
-        });
-    } catch (error) {
-        res.status(500).send("Ocurrió un error");
+            ], function (err, types) {
+                if (err)
+                    throw err
+                else {
+                    console.log(types)
+                    res.status(200).send({ data: types });
+                }
+            });
+        } catch (error) {
+            res.status(500).send("Ocurrió un error");
+        }
+    } else {
+        res.status(200).send({ data: [] });
     }
-
-
-
-    // let customer = req.payload;
-    // try {
-    //     con.query(`select r._id id ,week(r.start_date) s_date,fk_type type ,concat((select type from report_type where _id = r.fk_type),' WEEK ', week(r.start_date)) typeInfo, serviceName ServiceCode, invoice, job_inspection inspection, job_rework rework, job_sampling sampling,job_partial_rework partialRework, date_format(start_date, '%d/%m/%Y') fecha_inicio, date_format(finish_date, '%d/%m/%Y') fecha_fin, status, lot_number from reports r where fk_customer = ${customer.id} order by typeInfo;`, function (err, rows) {
-    //         if (err) throw err
-    //         else
-    //             res.send({ data: rows });
-    //     });
-    // } catch (e) {
-
-    // }
 });
 
 

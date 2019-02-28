@@ -32,9 +32,6 @@ function initInicio() {
             },
             { data: '_id' }
         ], "createdRow": function (row, data) {
-            //modal += `<div style="display:none" id="InfoReporteModal-${data._id}" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" style="display: block; padding-right: 15px;"> <div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">×</span> </button> <h4 class="modal-title" id="modal-label-${data._id}">Información de Reporte</h4> </div> <div class="modal-body"> <div class="row"> <form id="InfoReporteForm-${data._id}" class="form-horizontal form-label-left"> <div class="col-md-6"> <div class="form-group"> <label>Name Of Service</label> <input type="text" disabled  style="background-color:transparent; border:none; box-shadow:none"  value="${data.ServiceName}" class="form-control" id="codeService" name="ServiceCode" placeholder="Enter Service Name"> </div> <div class="form-group"> <label>Invoice Number</label> <input type="text" disabled  style="background-color:transparent; border:none; box-shadow:none"  value="${data.invoice}" class="form-control" id="invoice" name="invoice" placeholder="Enter Invoice Number"> </div> </div> <div class="col-md-6"> <div class="form-group"> <label>Lot Number QMC</label> <input type="text" disabled  style="background-color:transparent; border:none; box-shadow:none"  value="${data.LotNumber}" class="form-control" id="numberQMC" name="LotNumberQMC" placeholder="Enter Lot Number for QMC"> </div> <div class="form-group"> <label>Start Date</label> <input type=text disabled  style="background-color:transparent; border:none; box-shadow:none" name='fecha_inicio' value="${data.act_date}" placeholder="Fecha de Ingreso" class="form-control" id="fecha_inicio" aria-describedby="inputSuccess2Status"> </div> </div> </form> </div> </div> <div class="modal-footer"> <button type="button" class="btn btn-primary editar"  data-form="#InfoReporteForm-${data._id}" data-id="${data._id}">Guardar</button> </div> </div> </div> </div>`
-
-
             modal += `<div style="display:none" id="InfoReporteModal-${data._id}" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" style="display: block; padding-right: 15px;"> <div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">×</span> </button> <h4 class="modal-title" id="modal-label-${data._id}">Información de Reporte</h4> </div> <div class="modal-body"> <div class="row"> <form id="InfoReporteForm-${data._id}" class="form-horizontal form-label-left"> <div class="col-md-6"> <div class="form-group"> <label>Name Of Service</label> <input disabled style="border:none; background-color:transparent box-shadow:none" type="text" value="${data.ServiceName}" class="form-control" id="codeService" name="ServiceName" placeholder="Enter Service Name"> </div> <div class="form-group"> <label>Invoice Number</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" type="text" value="${data.invoice}" class="form-control" id="invoice" name="invoice" placeholder="Enter Invoice Number"> </div> </div> <div class="col-md-6"> <div class="form-group"> <label>Lot Number QMC</label> <input disabled style="border:none; background-color:transparent; box-shadow:none;" type="text" value="${data.LotNumber}" class="form-control" id="numberQMC" name="LotNumberQMC" placeholder="Enter Lot Number for QMC"> </div> </div> </form><label><h3>Human Resource</h3></label><div id="employees-${data._id}"><div class="pull-right" style="display:block;"></div>`;
 
             for (let index = 0; index < data.hr.employees.length; index++) {
@@ -54,11 +51,10 @@ function initInicio() {
             $(row).attr({ 'data-type': data.type });
             let op = $(row).children()[2];
             $(op).html(`<button type="button" class="btn btn-primary info" data-type="${data.type}" data-id="${data._id}" title="Ver Registros"><span class="fa fa-eye"></span></button><button type="button" class="btn btn-warning " data-toggle="modal"  title="Ver Información" data-target="#InfoReporteModal-${data._id}"><span class="fa fa-edit"></span></button>`);
-        }, 'searching': false
+        }, 'searching': false, ordering: false
     });
     let idReport = ""
     tabla_reportes.on('draw', function () {
-        $('#tablareportes tbody tr').hide();
         $('#modales').html(modal);
         modal = "";
         $('.info').on('click', function () {
@@ -107,7 +103,7 @@ function initInicio() {
                                 extend: 'excel',
                                 text: 'Save as Excel'
                             }
-                        ]
+                        ], ordering: false
                     });
                 },
                 failure: function (result) { },
@@ -143,12 +139,10 @@ function initInicio() {
                 $('#info').hide();
                 $('.tipo').removeClass('active');
                 $(this).addClass('active');
-                $('#tablareportes tbody tr').show();
                 $('#grafo').html("");
                 $('#rName').html($(this).html())
                 t = $(this).html();
-                $('#tablareportes tbody').find('tr').hide();
-                $('#tablareportes tbody').find(`[data-type=${$(this).data('type')}]`).show();
+                tabla_reportes.ajax.url('/getReports/' + $(this).data('type')).load();
                 let a = attrs[$(this).index()];
                 $('#options').html("<div class='row'>");
                 for (let index = 0; index < a.length; index++) {
