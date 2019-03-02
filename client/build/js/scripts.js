@@ -54,13 +54,15 @@ function initInicio() {
         }, 'searching': false, ordering: false
     });
     let idReport = ""
+    let type = "";
     tabla_reportes.on('draw', function () {
         $('#modales').html(modal);
         modal = "";
         $('.info').on('click', function () {
             $('#info').show();
             idReport = $(this).data('id');
-            let type = $(this).data('type');
+            type = $(this).data('type');
+            console.log(type)
             $('#grafo').css('width', $('.x_content').width());
             $.ajax({
                 url: `/types/${type}`,

@@ -10,13 +10,24 @@ var Log = require('../models/log');
 api.get('/types/:id?', middleware.ensureAuth, function (req, res) {
     try {
         if (req.payload.nombre == "Operaciones" || req.payload.nombre == "Admon") {
-            Type.find({}, function (err, types) {
-                if (err)
-                    throw err
-                else {
-                    res.status(200).send({ data: types });
-                }
-            });
+            if (req.params.id) {
+                Type.find({ _id: req.params.id }, function (err, types) {
+                    if (err)
+                        res.status(500).send({ data: "Server Internal Error" })
+                    else {
+                        res.status(200).send({ data: types });
+                    }
+                });
+            } else {
+                Type.find({}, function (err, types) {
+                    if (err)
+                        throw err
+                    else {
+                        res.status(200).send({ data: types });
+                    }
+                });
+            }
+
         } else {
             if (req.params.id) {
                 Type.find({ _id: req.params.id }, function (err, types) {
@@ -107,7 +118,6 @@ api.get('/getReports/:id?', middleware.ensureAuth, function (req, res) {
                 if (err)
                     throw err
                 else {
-                    console.log(types)
                     res.status(200).send({ data: types });
                 }
             });
