@@ -18,16 +18,16 @@ api.post('/log', function (req, res) {
                         if (check) {
                             res.status(200).send({ token: jwt.createToken(usuario) });
                         } else if (!check || err) {
-                            res.status(401).send({ message: 'Correo y/o Contraseña Incorrrectos' });
+                            res.status(401).send({ data: 'Correo y/o Contraseña Incorrrectos' });
                         }
                     });
                 } else {
-                    res.status(401).send({ message: 'El usuario no existe.' });
+                    res.status(401).send({ data: 'El usuario no existe.' });
                 }
             }
         });
     } catch (e) {
-        res.status(500).send({ message: 'Error del Servidor' });
+        res.status(500).send({ data: 'Error del Servidor' });
     }
 
 });

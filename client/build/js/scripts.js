@@ -9,8 +9,6 @@ if (!localStorage.getItem('authorization') && window.location.pathname != '/logi
 }
 
 function initInicio() {
-    let modal = "";
-
     let tabla_reportes = $('#tablareportes').DataTable({
         ajax: {
             type: 'GET',
@@ -32,37 +30,18 @@ function initInicio() {
             },
             { data: '_id' }
         ], "createdRow": function (row, data) {
-            modal += `<div style="display:none" id="InfoReporteModal-${data._id}" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" style="display: block; padding-right: 15px;"> <div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">×</span> </button> <h4 class="modal-title" id="modal-label-${data._id}">Información de Reporte</h4> </div> <div class="modal-body"> <div class="row"> <form id="InfoReporteForm-${data._id}" class="form-horizontal form-label-left"> <div class="col-md-6"> <div class="form-group"> <label>Name Of Service</label> <input disabled style="border:none; background-color:transparent box-shadow:none" type="text" value="${data.ServiceName}" class="form-control" id="codeService" name="ServiceName" placeholder="Enter Service Name"> </div> <div class="form-group"> <label>Invoice Number</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" type="text" value="${data.invoice}" class="form-control" id="invoice" name="invoice" placeholder="Enter Invoice Number"> </div> </div> <div class="col-md-6"> <div class="form-group"> <label>Lot Number QMC</label> <input disabled style="border:none; background-color:transparent; box-shadow:none;" type="text" value="${data.LotNumber}" class="form-control" id="numberQMC" name="LotNumberQMC" placeholder="Enter Lot Number for QMC"> </div> </div> </form><label><h3>Human Resource</h3></label><div id="employees-${data._id}"><div class="pull-right" style="display:block;"></div>`;
-
-            for (let index = 0; index < data.hr.employees.length; index++) {
-                const element = data.hr.employees[index];
-                modal += `<div class="row" style="display:inline-block"> <form class="employees"> <div class="form-group col-md-4"> <label>Employee</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" value="${element.employees}" type="text" id="employees" name="employees" placeholder="Empleados en Turno" class="form-control"> </div> <div class="form-group col-md-3"> <label>Turno</label> <select disabled id="shift" name="shift" class="form-control"><option value="${element.shift}">Turno ${element.shift}</option> <option value="1">Primer Turno</option> <option value="2">Segundo Turno</option> <option value="3">Tercer Turno</option> </select> </div> <div class="form-group col-md-4"> <label>Invested Hours</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" type="text" value="${element.hours}" name="hours" placeholder="Hours Worked" class="form-control" id="hours"> </div> <div class="col-xs-1"></div> </form> </div>`;
-            }
-
-            modal += `</div><hr><div id="supervisors-${data._id}"> <div class="pull-right"> </div>`;
-
-            for (let index = 0; index < data.hr.supervisors.length; index++) {
-                const element = data.hr.supervisors[index];
-                modal += `<div class="row" style="display:inline-block"> <form class="supervisor"> <div class="form-group col-md-4"> <label>Supervisors</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" value="${element.employees}" type="text" id="supervisors" name="employees" placeholder="Empleados en Turno" class="form-control"> </div> <div class="form-group col-md-3"> <label>Turno</label> <select disabled id="shift" name="shift" class="form-control"><option value="${element.shift}">Turno ${element.shift}</option> <option value="1">Primer Turno</option> <option value="2">Segundo Turno</option> <option value="3">Tercer Turno</option> </select> </div> <div class="form-group col-md-4"> <label>Invested Hours</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" value="${element.hours}" type="text" name="hours" placeholder="Hours Worked" class="form-control" id="hours"> </div> <div class="col-xs-1"></div> </form></div>`
-            }
-
-            modal += `</div></div> </div> <div class="modal-footer"> </div> </div> </div> </div>`;
-
             $(row).attr({ 'data-type': data.type });
             let op = $(row).children()[2];
-            $(op).html(`<button type="button" class="btn btn-primary info" data-type="${data.type}" data-id="${data._id}" title="Ver Registros"><span class="fa fa-eye"></span></button><button type="button" class="btn btn-warning " data-toggle="modal"  title="Ver Información" data-target="#InfoReporteModal-${data._id}"><span class="fa fa-edit"></span></button>`);
-        }, 'searching': false, ordering: false
+            $(op).html(`<button type="button" class="btn btn-primary info" data-type="${data.type}" data-id="${data._id}" title="Ver Registros"><span class="fa fa-eye"></span></button><button type="button" class="btn btn-warning details" data-toggle="modal"  title="Ver Información" data-id="${data._id}" data-target="#InfoReporteModal-${data._id}"><span class="fa fa-edit"></span></button>`);
+        }
     });
     let idReport = ""
     let type = "";
     tabla_reportes.on('draw', function () {
-        $('#modales').html(modal);
-        modal = "";
         $('.info').on('click', function () {
             $('#info').show();
             idReport = $(this).data('id');
             type = $(this).data('type');
-            console.log(type)
             $('#grafo').css('width', $('.x_content').width());
             $.ajax({
                 url: `/types/${type}`,
@@ -110,6 +89,39 @@ function initInicio() {
                 },
                 failure: function (result) { },
                 error: function (result) { }
+            });
+        });
+
+        $('.details').on('click', function () {
+            //Mis mamadas
+            $.ajax({
+                type: "get",
+                headers: { authorization: localStorage.getItem('authorization') },
+                url: "/getDetails/" + $(this).data('id'),
+                success: function (res) {
+                    let data = res[0];
+                    let mod = `<div style="display:none" id="InfoReporteModal-${data._id}" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" style="display: block; padding-right: 15px;"> <div class="modal-dialog modal-lg"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal"> <span aria-hidden="true">×</span> </button> <h4 class="modal-title" id="modal-label-${data._id}">Información de Reporte</h4> </div> <div class="modal-body"> <div class="row"> <form id="InfoReporteForm-${data._id}" class="form-horizontal form-label-left"> <div class="col-md-6"> <div class="form-group"> <label>Name Of Service</label> <input disabled style="border:none; background-color:transparent box-shadow:none" type="text" value="${data.ServiceName}" class="form-control" id="codeService" name="ServiceName" placeholder="Enter Service Name"> </div> <div class="form-group"> <label>Invoice Number</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" type="text" value="${data.invoice}" class="form-control" id="invoice" name="invoice" placeholder="Enter Invoice Number"> </div> </div> <div class="col-md-6"> <div class="form-group"> <label>Lot Number QMC</label> <input disabled style="border:none; background-color:transparent; box-shadow:none;" type="text" value="${data.LotNumber}" class="form-control" id="numberQMC" name="LotNumberQMC" placeholder="Enter Lot Number for QMC"> </div> </div> </form><label><h3>Human Resource</h3></label><div id="employees-${data._id}"><div class="pull-right" style="display:block;"></div>`;
+
+                    for (let index = 0; index < data.hr.employees.length; index++) {
+                        const element = data.hr.employees[index];
+                        mod += `<div class="row" style="display:inline-block"> <form class="employees"> <div class="form-group col-md-4"> <label>Employee</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" value="${element.employees}" type="text" id="employees" name="employees" placeholder="Empleados en Turno" class="form-control"> </div> <div class="form-group col-md-3"> <label>Turno</label> <select disabled id="shift" name="shift" class="form-control"><option value="${element.shift}">Turno ${element.shift}</option> <option value="1">Primer Turno</option> <option value="2">Segundo Turno</option> <option value="3">Tercer Turno</option> </select> </div> <div class="form-group col-md-4"> <label>Invested Hours</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" type="text" value="${element.hours}" name="hours" placeholder="Hours Worked" class="form-control" id="hours"> </div> <div class="col-xs-1"></div> </form> </div>`;
+                    }
+
+                    mod += `</div><hr><div id="supervisors-${data._id}"> <div class="pull-right"> </div>`;
+
+                    for (let index = 0; index < data.hr.supervisors.length; index++) {
+                        const element = data.hr.supervisors[index];
+                        mod += `<div class="row" style="display:inline-block"> <form class="supervisor"> <div class="form-group col-md-4"> <label>Supervisors</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" value="${element.employees}" type="text" id="supervisors" name="employees" placeholder="Empleados en Turno" class="form-control"> </div> <div class="form-group col-md-3"> <label>Turno</label> <select disabled id="shift" name="shift" class="form-control"><option value="${element.shift}">Turno ${element.shift}</option> <option value="1">Primer Turno</option> <option value="2">Segundo Turno</option> <option value="3">Tercer Turno</option> </select> </div> <div class="form-group col-md-4"> <label>Invested Hours</label> <input disabled style="border:none; background-color:transparent; box-shadow:none" value="${element.hours}" type="text" name="hours" placeholder="Hours Worked" class="form-control" id="hours"> </div> <div class="col-xs-1"></div> </form></div>`
+                    }
+
+                    mod += `</div></div> </div> <div class="modal-footer"> </div> </div> </div> </div>`;
+
+                    $('#modales').html(mod);
+
+                    let modal = $('#modales').children()[0];
+                    $(modal).modal('toggle');
+
+                }
             });
         });
     });
@@ -454,10 +466,10 @@ function initLogin() {
                     window.location.replace("/");
                 },
                 failure: function (result) {
-                    $.notify(result.message);
+                    $.notify(result.responseJSON.data);
                 },
                 error: function (result) {
-                    $.notify(result.message);
+                    $.notify(result.responseJSON.data);
                 }
             });
         } else {

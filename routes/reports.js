@@ -128,7 +128,17 @@ api.get('/getReports/:id?', middleware.ensureAuth, function (req, res) {
         res.status(200).send({ data: [] });
     }
 });
-
+api.get('/getDetails/:id', function (req, res) {
+    if (req.params.id) {
+        Report.find({ _id: mongoose.Types.ObjectId(req.params.id) }, function (err, report) {
+            if (err)
+                throw err;
+            else {
+                res.status(200).send(report);
+            }
+        });
+    }
+});
 
 api.get('/getGraphs/:report/:type', middleware.ensureAuth, function (req, res) {
     let customer = req.payload;
